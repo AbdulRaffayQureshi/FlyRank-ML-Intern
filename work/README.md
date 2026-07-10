@@ -32,8 +32,6 @@ work/
 
 Copy `capstone_report_template.md` to `capstone_report.md` and fill it in as you go — it
 mirrors the eight axes your work is graded on, so writing it early keeps you honest.
-<<<<<<< HEAD
-=======
 
 ## Your assignment index
 
@@ -42,8 +40,8 @@ Tick them off as you go; this table is the map of your work:
 
 | Notebook | Assignment | Status |
 |---|---|---|
-| `notebooks/w01_research_question.ipynb` | ML-02 | ☐ |
-| `notebooks/w02_ml_task_framing.ipynb` | ML-03 | ☐ |
+| `notebooks/w01_research_question.ipynb` | ML-02 | ✅ |
+| `notebooks/w02_ml_task_framing.ipynb` | ML-03 | ✅ |
 | `notebooks/w03_data_contract.ipynb` | ML-04 | ☐ |
 | `notebooks/w03_feature_leakage_check.ipynb` | ML-05 | ☐ |
 | `notebooks/w04_signal_audit.ipynb` | ML-06 | ☐ |
@@ -54,4 +52,3 @@ Tick them off as you go; this table is the map of your work:
 | `notebooks/capstone.ipynb` | ML-11 (the paper mirrors it) | ☐ |
 
 When your paper is deployed, put its exact URL in `../submission/paper_url.txt` (one line).
->>>>>>> upstream/main
