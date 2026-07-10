@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # FlyRank ML Internship - Intern Dataset and Lane Guide
 
 Status: intern-facing guide for the Applied Search Intelligence track.
@@ -48,7 +47,7 @@ This guide shows you how to use the data without turning the internship into a f
 ## 0. Where These Numbers Come From
 
 Every count and date in this guide was checked against the real data pipeline, not written from memory. The release itself was built, scrambled, and verified on FlyRank's side before it was published; the details of that build live in the dataset manifest that ships with the release on Hugging Face. You don't need any of that tooling — everything you need is already in this repo and on Hugging Face:
->>>>>>> upstream/main
+
 
 - the runnable starter pipeline (`scripts/01`–`05`, `ml_utils.py`, `run_all.py`);
 - its verified committed outputs (`outputs/model_report.md`, `outputs/refresh_queue_sample.csv`, `outputs/charts/`); `outputs/model_results.json` is regenerated when you run the pipeline;
