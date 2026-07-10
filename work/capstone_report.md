@@ -5,12 +5,7 @@
 - **Repo:** FlyRank-ML-Intern
 - **Date:** July 2026
 
-
 ## 1. Problem framing
-
-What decision does this support? Name the unit of analysis (page, client, day…), the output
-(score, rank, cluster, report), the action a human takes from it, and the cost of a wrong
-call. Why does data/ML help here at all?
 
 This project delivers an algorithmic decision-support framework to help FlyRank editorial teams systematically prioritize decaying or stale web content for manual updates.
 
@@ -26,10 +21,14 @@ Furthermore, search traffic decay behaves non-linearly; dropping ranking positio
 
 ## 2. Data safety
 
-Which data you used and which columns you deliberately excluded (and why). Leakage risks you
-considered — especially label-derived fields (`trend_direction`, `trend_pct`) and pseudonymous
-IDs (grouping only, never features). Confirm nothing client-identifying appears anywhere in
-`work/`.
+To guarantee pipeline runtime safety, maintain strict client privacy, and eliminate data leakage risk, our schema metrics are isolated into distinct engineering buckets:
+
+- **Ingested Feature Space:** The model is restricted to safe historical indicators including `impressions_last_30d`, `clicks_last_30d`, `avg_position`, `days_since_last_update`, and `word_count`. These continuous and discrete values provide historical context without leaking future performance signals.
+- **Target Isolation:** The target proxy ($Clicks_{prev} - Clicks_{last}$) is calculated and stored independently. It is utilized purely during the evaluation and training loss calculation steps and is strictly isolated from the feature matrix fed to the model.
+- **Deliberately Excluded Fields:**
+  - `trend_direction` and `trend_pct` — These fields were explicitly excluded because they are directly derived from the target itself. Ingesting them would cause immediate, catastrophic data leakage—allowing the model to trivially calculate future outcomes during training, resulting in perfect validation scores that completely fail when deployed on new data.
+  - `client_id` and `content_id` — These pseudonymous identifiers are strictly restricted to downstream database joins, listwise sorting, and human display layout configurations. They are completely barred from serving as modeling features to prevent the algorithm from memorizing client-specific baseline shifts.
+- **Privacy and Anonymization Confirmation:** No raw client domain URLs, private text queries, or corporate identity names are present within the `work/` folder or the underlying `content_refresh_anonymized.csv` file. All tracking observations are entirely anonymized, ensuring total data compliance.
 
 ## 3. Baseline
 
