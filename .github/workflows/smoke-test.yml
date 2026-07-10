@@ -51,8 +51,6 @@ jobs:
             echo "::error::Unexpected data file(s) committed:"; echo "$bad"; exit 1
           fi
           echo "No leaked datasets."
-<<<<<<< HEAD
-=======
 
       - name: Check submission/paper_url.txt format
         run: |
@@ -64,4 +62,3 @@ jobs:
             https://*) echo "paper_url.txt looks good: $line";;
             *) echo "::warning::$f should contain exactly one https:// URL on the first line.";;
           esac
->>>>>>> upstream/main
