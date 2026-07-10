@@ -92,18 +92,12 @@ live, so they always reflect the current data and environment.
 - Frame every result as **observed / measured / directional / decision-support** — never
   "I predicted Google's algorithm."
 
-<<<<<<< HEAD
-The `.gitignore` blocks datasets by default, and grading checks that no dataset was committed.
-=======
-The `.gitignore` blocks datasets by default, and CI fails any commit that includes a dataset.
-
-> > > > > > > upstream/main
 
 ---
 
 ## Assignments & schedule
 
-<<<<<<< HEAD
+
 Weekly assignments, live events, and the capstone rubric live on the **InternHQ board** at
 `internhq.flyrank.ai` (your enrollment email has your access). This repo is the shared technical
 foundation they all build on.
@@ -112,8 +106,6 @@ Weekly assignments, live events, and the capstone live on **your portal board** 
 enrollment email has your access link). This repo is the shared technical foundation they all
 build on — and the `skills/` folder here is the instruction library for your AI assistant
 (start at [skills/README.md](skills/README.md)).
-
-> > > > > > > upstream/main
 
 **First time with GitHub?** You need exactly four things (full walkthrough: [SETUP.md](SETUP.md)):
 
