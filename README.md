@@ -101,7 +101,7 @@ live, so they always reflect the current data and environment.
 Weekly assignments, live events, and the capstone rubric live on the **InternHQ board** at
 `internhq.flyrank.ai` (your enrollment email has your access). This repo is the shared technical
 foundation they all build on.
-=======
+
 Weekly assignments, live events, and the capstone live on **your portal board** (your
 enrollment email has your access link). This repo is the shared technical foundation they all
 build on — and the `skills/` folder here is the instruction library for your AI assistant
