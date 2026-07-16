@@ -5,7 +5,7 @@
 - **Repo:** FlyRank-ML-Intern
 - **Date:** July 2026
 
-## Abstract
+## 0. Abstract
 
 This project presents an algorithmic decision-support framework designed to help editorial teams systematically prioritize decaying web content for optimization. Traditional standalone keyword volume metrics are highly deceptive indicators of content health, showing a remarkably weak correlation coefficient of 0.001 with actual page impressions. Furthermore, search traffic decay behaves non-linearly, making rigid, rule-based scheduling highly inefficient.
 
