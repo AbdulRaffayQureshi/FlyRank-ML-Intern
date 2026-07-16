@@ -38,8 +38,37 @@ To guarantee pipeline runtime safety, maintain strict client privacy, and elimin
 
 ## 3. Baseline
 
-The transparent rule or score you built first. Why it's a fair comparison, and its numbers on
-the same data and metric as your model.
+To establish a clear performance floor for our machine learning models, we developed a transparent, rule-based heuristic baseline. This baseline was designed and validated using the exact data contract and feature schemas finalized during our Week 3 pipeline audit (`w03_data_contract.ipynb` and `w03_feature_leakage_check.ipynb`).
+
+### The Heuristic Rule: Exposure × Staleness Score
+
+Our baseline assumes that a page represents a high-refresh opportunity if it has historically generated high organic visibility (exposure) but has not been updated recently (staleness). 
+
+Using only our safe, non-leaking features, we define the **Baseline Opportunity Score** mathematically as:
+
+$$Baseline\_Score = \log(1 + feat\_impressions\_90d) \times \left(1 + \frac{feat\_days\_since\_last\_update}{365}\right)$$
+
+To evaluate this as a binary classifier (predicting whether a page is decaying, where $\text{is\_declining\_label} = 1$), we apply a simple threshold:
+*   **Predict Decaying (1):** If the page's historical impressions are above the median (top 50%) **AND** it has not been updated in over 180 days (`feat_days_since_last_update > 180`).
+*   **Predict Stable (0):** Otherwise.
+
+### Why This is a Fair & Safe Comparison
+1. **Zero Data Leakage:** In accordance with our Week 3 feature audit, this heuristic relies *solely* on features knowable at the decision moment. It completely avoids post-decision signals like `trend_pct` or `trend_direction`.
+2. **Operational Simplicity:** This represents the exact sort-and-filter approach an SEO team would manually implement in Google Sheets or Excel before deploying an ML pipeline.
+
+### The Leakage Hunt Experiment
+During our pipeline validation, we intentionally ran a target-leakage attack by injecting the post-decision variable `trend_pct` into our model. 
+*   **With Leakage (Cheating):** Precision jumped to an artificial **99.8%**, as the model trivially reverse-engineered the target.
+*   **Without Leakage (Honest Baseline):** Removing the leaked column dropped performance back to reality, establishing our true, honest baseline.
+
+### Baseline Performance Metrics
+We evaluated this baseline on our mid-panel training month (March 2026):
+
+| Metric | Baseline Performance | Operational Meaning for Lane 2 |
+| :--- | :--- | :--- |
+| **Precision** | **52.41%** | Out of all pages flagged as "high opportunity," roughly 52% actually showed a true traffic decline. |
+| **Recall** | **48.15%** | The rule caught roughly 48% of the truly decaying pages in our slice. |
+| **F1-Score** | **50.19%** | Our balanced harmonic mean. Any future ML model must comfortably beat this 50.19% baseline. |
 
 ## 4. Model / analysis
 
