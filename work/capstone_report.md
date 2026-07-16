@@ -5,12 +5,18 @@
 - **Repo:** FlyRank-ML-Intern
 - **Date:** July 2026
 
+## Abstract
+
+This project presents an algorithmic decision-support framework designed to help editorial teams systematically prioritize decaying web content for optimization. Traditional standalone keyword volume metrics are highly deceptive indicators of content health, showing a remarkably weak correlation coefficient of 0.001 with actual page impressions. Furthermore, search traffic decay behaves non-linearly, making rigid, rule-based scheduling highly inefficient.
+
+To resolve this, we formulate a multi-dimensional Content Opportunity Score using historical features (`impressions_last_30d`, `clicks_last_30d`, `avg_position`, and `word_count`). Strict data safety, privacy, and leakage guardrails are programmatically enforced under the ML-04 Data Contract by isolating the target proxy from the feature space and completely excluding trend-derived metrics. This decision-support system outputs a list-wise ranking queue, allowing content editors to allocate copywriting resources efficiently, supporting organic traffic recovery while minimizing manual guesswork and budgetary waste.
+
 ## 1. Problem framing
 
 This project delivers an algorithmic decision-support framework to help FlyRank editorial teams systematically prioritize decaying or stale web content for manual updates.
 
 - **Unit of Analysis:** One unique web page URL tracked within a specific domain context over a fixed historical aggregation window.
-- **Model Output:** A continuous, multi-dimensional Opportunity Score used to generate a structured, listwise ranking queue.
+- **Model Output:** A continuous, multi-dimensional Opportunity Score used to generate a structured, list-wise ranking queue.
 - **Downstream Human Action:** Content editors review this prioritized dashboard queue to assign copywriters to update specific high-opportunity URLs, maximizing organic traffic recovery while minimizing manual guesswork.
 - **Cost of a Wrong Call:**
   - _False Positive (Type I Error):_ The system flags a completely dead-end or unrecoverable page for a rewrite. **Cost:** Wasted copywriting budgets, lost editorial resource hours, and missed opportunity costs.
