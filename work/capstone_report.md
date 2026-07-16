@@ -42,38 +42,74 @@ To establish a clear performance floor for our machine learning models, we devel
 
 ### The Heuristic Rule: Exposure × Staleness Score
 
-Our baseline assumes that a page represents a high-refresh opportunity if it has historically generated high organic visibility (exposure) but has not been updated recently (staleness). 
+Our baseline assumes that a page represents a high-refresh opportunity if it has historically generated high organic visibility (exposure) but has not been updated recently (staleness).
 
 Using only our safe, non-leaking features, we define the **Baseline Opportunity Score** mathematically as:
 
 $$Baseline\_Score = \log(1 + feat\_impressions\_90d) \times \left(1 + \frac{feat\_days\_since\_last\_update}{365}\right)$$
 
 To evaluate this as a binary classifier (predicting whether a page is decaying, where $\text{is\_declining\_label} = 1$), we apply a simple threshold:
-*   **Predict Decaying (1):** If the page's historical impressions are above the median (top 50%) **AND** it has not been updated in over 180 days (`feat_days_since_last_update > 180`).
-*   **Predict Stable (0):** Otherwise.
+
+- **Predict Decaying (1):** If the page's historical impressions are above the median (top 50%) **AND** it has not been updated in over 180 days (`feat_days_since_last_update > 180`).
+- **Predict Stable (0):** Otherwise.
 
 ### Why This is a Fair & Safe Comparison
-1. **Zero Data Leakage:** In accordance with our Week 3 feature audit, this heuristic relies *solely* on features knowable at the decision moment. It completely avoids post-decision signals like `trend_pct` or `trend_direction`.
+
+1. **Zero Data Leakage:** In accordance with our Week 3 feature audit, this heuristic relies _solely_ on features knowable at the decision moment. It completely avoids post-decision signals like `trend_pct` or `trend_direction`.
 2. **Operational Simplicity:** This represents the exact sort-and-filter approach an SEO team would manually implement in Google Sheets or Excel before deploying an ML pipeline.
 
 ### The Leakage Hunt Experiment
-During our pipeline validation, we intentionally ran a target-leakage attack by injecting the post-decision variable `trend_pct` into our model. 
-*   **With Leakage (Cheating):** Precision jumped to an artificial **99.8%**, as the model trivially reverse-engineered the target.
-*   **Without Leakage (Honest Baseline):** Removing the leaked column dropped performance back to reality, establishing our true, honest baseline.
+
+During our pipeline validation, we intentionally ran a target-leakage attack by injecting the post-decision variable `trend_pct` into our model.
+
+- **With Leakage (Cheating):** Precision jumped to an artificial **99.8%**, as the model trivially reverse-engineered the target.
+- **Without Leakage (Honest Baseline):** Removing the leaked column dropped performance back to reality, establishing our true, honest baseline.
 
 ### Baseline Performance Metrics
+
 We evaluated this baseline on our mid-panel training month (March 2026):
 
-| Metric | Baseline Performance | Operational Meaning for Lane 2 |
-| :--- | :--- | :--- |
-| **Precision** | **52.41%** | Out of all pages flagged as "high opportunity," roughly 52% actually showed a true traffic decline. |
-| **Recall** | **48.15%** | The rule caught roughly 48% of the truly decaying pages in our slice. |
-| **F1-Score** | **50.19%** | Our balanced harmonic mean. Any future ML model must comfortably beat this 50.19% baseline. |
+| Metric        | Baseline Performance | Operational Meaning for Lane 2                                                                      |
+| :------------ | :------------------- | :-------------------------------------------------------------------------------------------------- |
+| **Precision** | **52.41%**           | Out of all pages flagged as "high opportunity," roughly 52% actually showed a true traffic decline. |
+| **Recall**    | **48.15%**           | The rule caught roughly 48% of the truly decaying pages in our slice.                               |
+| **F1-Score**  | **50.19%**           | Our balanced harmonic mean. Any future ML model must comfortably beat this 50.19% baseline.         |
 
-## 4. Model / analysis
+## 4. Model / Analysis
 
-Your method and why it fits the lane. The exact feature list (and what you left out on
-purpose). The target or proxy definition, in one sentence.
+### 4.1 Methodology & Lane Fit
+
+To solve the **Lane 2 (Content Optimization / Refresh)** challenge, we deploy a supervised modeling framework designed to prioritize high-leverage content assets. Rather than predicting arbitrary pageviews, our method models the likelihood of search performance decay and subsequent optimization upside.
+
+This approach fits Lane 2 perfectly: by isolating pages in the "striking distance" position bracket (ranks 3–15) that exhibit high demand but sub-peer click-through rates (CTR), we transition our content strategy from reactive, calendar-driven updates to high-yield, algorithmic prioritizations. We establish a deterministic, transparent rule-based heuristic score as our baseline, against which all future supervised estimators (e.g., Random Forest, XGBoost) will be strictly compared using ranking metrics.
+
+---
+
+### 4.2 Feature Engineering & Selection Strategy
+
+We engineered five safe, leakage-free features based on trailing 90-day historical snapshot metrics.
+
+| Feature Name             | Type       | Description / Intent                                                                         |
+| :----------------------- | :--------- | :------------------------------------------------------------------------------------------- |
+| `impressions_90d`        | Continuous | Historical search volume. Identifies established organic demand.                             |
+| `days_since_last_update` | Continuous | Structural staleness metric. Measures time elapsed since the last content modification.      |
+| `avg_position`           | Continuous | Mean organic search ranking. Crucial for isolating the "striking distance" (positions 3–15). |
+| `ctr`                    | Continuous | Actual click-through rate (%). Adjusted against position-based peer group medians.           |
+| `word_count`             | Continuous | Document length proxy. Serves as an indicator of content depth and topical scope.            |
+
+#### What We Left Out on Purpose (Leakage Prevention)
+
+To maintain strict validation integrity, we intentionally excluded several parameters:
+
+- **`trend_direction` and `trend_pct`:** Excluded because these features directly derive from the future-looking target variable. Including them would cause immediate, catastrophic validation leakage.
+- **`content_id` and `client_id`:** These identifiers are treated as pseudonyms and are excluded from feature spaces. They are reserved strictly for grouping during cross-validation splits (e.g., GroupKFold by `client_id` to prevent client-signature leakage).
+- **Average Position `0` values:** Imputed or filtered out as missing indicators (`NaN`) rather than real rankings, protecting models from treating untracked pages as top-ranking assets.
+
+---
+
+### 4.3 Target Variable Definition
+
+> **Target Definition:** We model a binary classification target, $y \in \{0, 1\}$, where $y = 1$ if a content item's organic traffic trend is classified as "down" (representing systemic decay in active demand), indicating an urgent, high-upside opportunity for an optimization refresh.
 
 ## 5. Evaluation
 

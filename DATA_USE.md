@@ -57,9 +57,5 @@ Your final repo is public. Before you push:
 - confirm you did not commit a larger dataset than the anonymized starter slice;
 - keep claims honest and decision-support framed.
 
-<<<<<<< HEAD
-The grading agent fails any submission that commits a dataset or leaks client-identifying
-=======
 CI fails any commit that includes a dataset or leaks client-identifying
->>>>>>> upstream/main
 patterns — this rule doubles as the public-safety discipline the internship teaches.
