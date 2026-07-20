@@ -147,8 +147,29 @@ A granular audit of the confident misses (the top absolute error deltas extracte
 
 ## 6. Interpretation
 
-What the model/clusters actually found. Feature importances or cluster profiles in plain
-words. Surprises and negative results — a well-understood "no effect" is a valid result.
+### Core Findings & Structural Driver Profiles
+The model primarily identified that recent surface-level engagement metrics carry the highest predictive utility when mapping content decline patterns. Our out-of-fold feature importance evaluation reveals a highly concentrated reliance on baseline user visibility channels:
+
+*   **Top Signal Dominance:** Historical visibility via `impressions_prev_30d` emerged as the single most powerful driver, accounting for 30.39% of the model's absolute decision-making weight.
+*   **Volumetric Proximity:** Shorter-term volumetric features such as `impressions_last_30d` (10.34%) and long-term aggregations like `impressions_90d` (8.61%) formed the secondary predictive tier.
+*   **Positional Authority:** Broad search index indicators, specifically `days_with_impressions` (5.67%) and `avg_position` (5.36%), track moderate directional correlations with stable vs. decaying content trajectories.
+
+In plain words, the model is not relying on micro-level content attributes (such as textual metadata changes or specific keyword counts) to determine decline; instead, it is tracking macroeconomic momentum. It captures macro-level decay simply by flagging pieces of content whose impression velocity has dropped below a historical baseline cohort rate.
+
+### Structural Failures & Cohort Memorization
+A critical observation from this validation cycle was the structural drop in generalization metrics when transitioning from an unadjusted validation frame to a rigorous client-grouped validation design.
+
+*   **The Validation Gap:** The baseline randomized configuration yielded a naive AUC of 0.857 and an accuracy of 76.15%. Under a strict, client-isolated cross-validation split (`GroupKFold`), performance dropped to an honest AUC of 0.799 and a mean accuracy of 72.46%. 
+*   **The Overfitting Mechanism:** This measured drop of 0.058 AUC points confirms that a portion of the original performance was an artifact of cohort memorization rather than pure, generalizable signal processing. 
+*   **Anatomy of a Failure Mode:** Error diagnostics confirmed this hypothesis: the model's top 3 most extreme false positive predictions (all outputting an overconfident decline probability exceeding 80% for content that remained completely stable) occurred within a single account: `client_8527a891e2`. Because a randomized split allows individual client rows to pollute both training and evaluation steps, the model simply memorized the idiosyncratic baseline traffic anomalies of this heavily repeating account and faked true classification skill.
+
+### Surprises, Negative Results, & Timeline Leakage
+The audit yielded a significant negative result regarding granular content optimization variables: textual modifications, exact keyword metrics, and structural text indicators demonstrated negligible relative importance scores. This suggests that localized on-page adjustments do not act as immediate leading indicators of structural traffic stabilization within the observed timeframes.
+
+Furthermore, our audit isolated an operational timeline violation. The presence of `impressions_last_30d` as a primary driver (10.34%) represents active target window overlap leakage. Because our classification target flags a traffic trajectory shift over the final 30 days of the panel, utilizing a feature aggregated within that exact same temporal window allows the model to retroactively evaluate the outcome. This indicates that while the honest model retains reasonable predictive power (~0.799 AUC), the feature matrix must undergo strict chronological window separation prior to any deployment testing outside of a historical decision-support context.
+
+### Scientific Claim Guardrails
+Based on these measured boundaries, all pipeline documentation is updated to reflect that this system operates exclusively as a **directional decision-support mechanism** rather than an absolute predictive warning system. Performance thresholds are expected to vary significantly when deployed across distinct, unseen client cohorts with unique traffic volume profiles.
 
 ## 7. Recommendation
 
